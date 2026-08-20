@@ -38,6 +38,7 @@ AI_SOURCE_LABELS = {
 HISTORY_STATUS_LABELS = {
     "COMPLETED": "완료",
     "UPCOMING": "진행 예정",
+    "MISSED": "미완료",
     "IN_PROGRESS": "진행중",
     "CANCELED": "취소",
 }
@@ -442,6 +443,12 @@ class RecoverySlotHistorySerializer(RecoverySlotSerializer):
             return "진행 예정 취소"
 
         if status in ["COMPLETED", "IN_PROGRESS"]:
+            return ""
+
+        if status == "MISSED":
+            for insight in obj.insights.all():
+                if insight.insight_type == InsightType.RECOMMENDATION_REASON:
+                    return insight.body
             return ""
 
         if status == "UPCOMING":
